@@ -45,7 +45,7 @@ struct DocumentFile {
     var type: String
 
     // Set la soucre de test documents au fichiers dans l'explorer
-    static let testDocuments: [DocumentFile] = listFileInBundle()
+    static let documents: [DocumentFile] = listFileInBundle()
 }
 
 extension Int {
@@ -69,12 +69,12 @@ class DocumentTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return DocumentFile.testDocuments.count
+        return DocumentFile.documents.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
-        let document = DocumentFile.testDocuments[indexPath.row]
+        let document = DocumentFile.documents[indexPath.row]
         
         // Use the .subtitle style to show both title and detail text
         cell.textLabel?.text = document.title
@@ -88,4 +88,21 @@ class DocumentTableViewController: UITableViewController {
         
         return cell
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // 1. Récupérer l'index de la ligne sélectionnée
+        if let indexPath = tableView.indexPathForSelectedRow {
+            // 2. Récupérer le document correspondant à l'index
+            let selectedDocument = DocumentFile.documents[indexPath.row]
+            
+            // 3. Cibler l'instance de DocumentViewController via segue.destination
+            // 4. Caster le segue.destination en DocumentViewController
+            if let documentViewController = segue.destination as? DocumentViewController {
+                // 5. Remplir la variable imageName de l'instance de DocumentViewController avec le nom de l'image du document
+                documentViewController.imageName = selectedDocument.imageName
+            }
+        }
+    }
+
+    
 }

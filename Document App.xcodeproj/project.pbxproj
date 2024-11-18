@@ -19,6 +19,7 @@
 		DBF4523D2CEB6DFF007C64A7 /* mustang.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DBF452392CEB6DFE007C64A7 /* mustang.jpg */; };
 		DBF4523E2CEB6DFF007C64A7 /* supra.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DBF4523A2CEB6DFF007C64A7 /* supra.jpg */; };
 		DBF452422CEB7090007C64A7 /* Ferrari.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DBF452412CEB7090007C64A7 /* Ferrari.jpg */; };
+		DBF452442CEB7CB9007C64A7 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452432CEB7CB9007C64A7 /* DocumentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		DBF452392CEB6DFE007C64A7 /* mustang.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mustang.jpg; sourceTree = "<group>"; };
 		DBF4523A2CEB6DFF007C64A7 /* supra.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = supra.jpg; sourceTree = "<group>"; };
 		DBF452412CEB7090007C64A7 /* Ferrari.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Ferrari.jpg; sourceTree = "<group>"; };
+		DBF452432CEB7CB9007C64A7 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 				DBF452292CEB3181007C64A7 /* LaunchScreen.storyboard */,
 				DBF4522C2CEB3181007C64A7 /* Info.plist */,
 				DBF452322CEB333A007C64A7 /* Answers.md */,
+				DBF452432CEB7CB9007C64A7 /* DocumentViewController.swift */,
 				DBF452392CEB6DFE007C64A7 /* mustang.jpg */,
 				DBF4523A2CEB6DFF007C64A7 /* supra.jpg */,
 				DBF452382CEB6DFD007C64A7 /* porsche.jpg */,
@@ -163,6 +166,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBF452442CEB7CB9007C64A7 /* DocumentViewController.swift in Sources */,
 				DBF452232CEB317F007C64A7 /* ViewController.swift in Sources */,
 				DBF4521F2CEB317F007C64A7 /* AppDelegate.swift in Sources */,
 				DBF452362CEB4628007C64A7 /* DocumentTableViewController.swift in Sources */,
