@@ -24,6 +24,7 @@
 		DBF452272CEB3181007C64A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DBF4522A2CEB3181007C64A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DBF4522C2CEB3181007C64A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DBF452322CEB333A007C64A7 /* Answers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Answers.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +64,7 @@
 				DBF452272CEB3181007C64A7 /* Assets.xcassets */,
 				DBF452292CEB3181007C64A7 /* LaunchScreen.storyboard */,
 				DBF4522C2CEB3181007C64A7 /* Info.plist */,
+				DBF452322CEB333A007C64A7 /* Answers.md */,
 			);
 			path = "Document App";
 			sourceTree = "<group>";
