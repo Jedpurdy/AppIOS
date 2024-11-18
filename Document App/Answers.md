@@ -116,3 +116,21 @@
         Un segue est une transition entre deux écrans dans une app, permettant de passer des données et de naviguer.   
     Exercice 2)
         Une constraint est une règle de positionnement d'éléments d'interface, utilisée par AutoLayout pour adapter la mise en page à différents écrans.
+
+7) Binding
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // 1. Récupérer l'index de la ligne sélectionnée
+        if let indexPath = tableView.indexPathForSelectedRow {
+            // 2. Récupérer le document correspondant à l'index
+            let selectedDocument = DocumentFile.documents[indexPath.row]
+            
+            // 3. Cibler l'instance de DocumentViewController via segue.destination
+            // 4. Caster le segue.destination en DocumentViewController
+            if let documentViewController = segue.destination as? DocumentViewController {
+                // 5. Remplir la variable imageName de l'instance de DocumentViewController avec le nom de l'image du document
+                documentViewController.imageName = selectedDocument.imageName
+            }
+        }
+    }
+    

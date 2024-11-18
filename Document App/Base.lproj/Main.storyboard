@@ -40,9 +40,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="oQT-Mz-0KA" kind="show" id="jDh-Kc-RBI"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -83,16 +80,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MJs-vg-nYr">
-                                <rect key="frame" x="20" y="171" width="390" height="727"/>
+                                <rect key="frame" x="0.0" y="59" width="430" height="873"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Yij-lx-4LL"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="MJs-vg-nYr" firstAttribute="bottom" secondItem="Yij-lx-4LL" secondAttribute="bottom" id="OR1-cm-MmH"/>
-                            <constraint firstItem="MJs-vg-nYr" firstAttribute="trailing" secondItem="hmU-Ys-qpj" secondAttribute="trailingMargin" id="aOF-Vi-hiE"/>
-                            <constraint firstItem="MJs-vg-nYr" firstAttribute="top" secondItem="Yij-lx-4LL" secondAttribute="top" constant="68" id="dmA-Yu-C8g"/>
-                            <constraint firstItem="MJs-vg-nYr" firstAttribute="leading" secondItem="hmU-Ys-qpj" secondAttribute="leadingMargin" id="qcy-Q7-q0G"/>
+                            <constraint firstItem="MJs-vg-nYr" firstAttribute="top" secondItem="Yij-lx-4LL" secondAttribute="top" id="F2f-9t-pPk"/>
+                            <constraint firstItem="MJs-vg-nYr" firstAttribute="centerX" secondItem="hmU-Ys-qpj" secondAttribute="centerX" id="FRD-EQ-pun"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="MJs-vg-nYr" secondAttribute="bottom" constant="-34" id="e5j-zE-mvX"/>
+                            <constraint firstItem="MJs-vg-nYr" firstAttribute="leading" secondItem="Yij-lx-4LL" secondAttribute="leading" id="uXE-ql-C1W"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="gPh-rW-Ofb"/>

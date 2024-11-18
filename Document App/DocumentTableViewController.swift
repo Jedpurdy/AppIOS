@@ -1,4 +1,6 @@
 import UIKit
+import QuickLook
+
 func listFileInBundle() -> [DocumentFile] {
     // Initialise le FileManager pour naviguer dans le système de fichiers.
     let fm = FileManager.default
@@ -56,8 +58,10 @@ extension Int {
     }
 }
 
-class DocumentTableViewController: UITableViewController {
+class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource {
 
+    
+    var previewItem: QLPreviewItem?
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -89,20 +93,29 @@ class DocumentTableViewController: UITableViewController {
         return cell
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // 1. Récupérer l'index de la ligne sélectionnée
-        if let indexPath = tableView.indexPathForSelectedRow {
-            // 2. Récupérer le document correspondant à l'index
-            let selectedDocument = DocumentFile.documents[indexPath.row]
-            
-            // 3. Cibler l'instance de DocumentViewController via segue.destination
-            // 4. Caster le segue.destination en DocumentViewController
-            if let documentViewController = segue.destination as? DocumentViewController {
-                // 5. Remplir la variable imageName de l'instance de DocumentViewController avec le nom de l'image du document
-                documentViewController.imageName = selectedDocument.imageName
-            }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+          let document = DocumentFile.documents[indexPath.row]
+          instantiateQLPreviewController(withUrl: document.url)
+      }
+    
+    func instantiateQLPreviewController(withUrl url: URL) {
+            let previewController = QLPreviewController()
+            previewController.dataSource = self
+            previewItem = url as QLPreviewItem
+            navigationController?.pushViewController(previewController, animated: true)
         }
-    }
+
+        // MARK: - QLPreviewControllerDataSource
+
+        // Fournir le nombre d'éléments à prévisualiser (1 dans ce cas)
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            return 1
+        }
+        
+        // Fournir l'élément à prévisualiser
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            return previewItem!
+        }
 
     
 }
