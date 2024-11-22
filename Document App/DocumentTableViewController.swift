@@ -13,25 +13,33 @@ func listFileInBundle() -> [DocumentFile] {
     // Tableau pour stocker les fichiers sous forme de DocumentFile
     var documentListBundle = [DocumentFile]()
     
+    // Define an array of valid file extensions you want to include
+    let validExtensions = ["jpg", "jpeg", "png", "pdf"]
+    
     for item in items {
         // Ignorer les fichiers système "DS_Store" et récupérer tous les fichiers
-        if !item.hasSuffix("DS_Store") && item.hasSuffix(".jpg") {
-            let currentUrl = URL(fileURLWithPath: path + "/" + item)
-            // Récupérer les informations sur le fichier
-            let resourcesValues = try! currentUrl.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
-            
-            // Ajouter le fichier à la liste en tant que DocumentFile
-            documentListBundle.append(DocumentFile(
-                title: resourcesValues.name!,                      // Nom du fichier
-                size: resourcesValues.fileSize ?? 0,              // Taille du fichier
-                imageName: item,                                   // Nom de l'image (facultatif)
-                url: currentUrl,                                   // URL du fichier
-                type: resourcesValues.contentType!.description     // Type MIME du fichier
-            ))
+        if !item.hasSuffix("DS_Store") {
+            // Vérifier l'extension du fichier (en minuscules pour rendre la vérification insensible à la casse)
+            let fileExtension = (item as NSString).pathExtension.lowercased()
+            if validExtensions.contains(fileExtension) {
+                let currentUrl = URL(fileURLWithPath: path + "/" + item)
+                // Récupérer les informations sur le fichier
+                let resourcesValues = try! currentUrl.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
+                
+                // Ajouter le fichier à la liste en tant que DocumentFile
+                documentListBundle.append(DocumentFile(
+                    title: resourcesValues.name!,                      // Nom du fichier
+                    size: resourcesValues.fileSize ?? 0,              // Taille du fichier
+                    imageName: item,                                   // Nom de l'image (facultatif)
+                    url: currentUrl,                                   // URL du fichier
+                    type: resourcesValues.contentType!.description     // Type MIME du fichier
+                ))
+            }
         }
     }
     return documentListBundle
 }
+
 
 // Structure pour représenter un fichier
 struct DocumentFile {
@@ -54,18 +62,46 @@ extension Int {
     }
 }
 
-class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource, UIDocumentPickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource, UIDocumentPickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UISearchResultsUpdating {
     
     var previewItem: QLPreviewItem?
     var allDocuments: [[DocumentFile]] = [[], []]
-
+    var filteredDocuments: [[DocumentFile]] = [[], []]
+    var searchController: UISearchController!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initialize the search controller
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Documents"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument)),
             UIBarButtonItem(title: "Photos", style: .plain, target: self, action: #selector(pickImageFromPhotos))
         ]
+        
         loadAllDocuments()
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchText = searchController.searchBar.text ?? ""
+        
+        // Filter documents based on the search text
+        filteredDocuments[0] = allDocuments[0].filter { document in
+            document.title.lowercased().contains(searchText.lowercased())
+        }
+        
+        filteredDocuments[1] = allDocuments[1].filter { document in
+            document.title.lowercased().contains(searchText.lowercased())
+        }
+        
+        // Reload the table view with filtered results
+        tableView.reloadData()
     }
     
     @objc func addDocument() {
@@ -121,34 +157,6 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         }
     }
     
-    // Handle the image selected from the photos library
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // Check if an image was picked
-        if let selectedImage = info[.imageURL] as? URL {
-            // Present an alert to allow the user to rename the image
-            let alertController = UIAlertController(title: "Rename Image", message: "Enter a new name for the image.", preferredStyle: .alert)
-            alertController.addTextField { textField in
-                textField.placeholder = selectedImage.lastPathComponent
-            }
-            
-            // Action when "Rename" is clicked
-            let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
-                if let newName = alertController.textFields?.first?.text {
-                    self.copyFileToDocumentsDirectory(fromUrl: selectedImage, newName: newName)
-                    self.loadAllDocuments()  // Reload the table to show the new image in the imported documents section
-                }
-            }
-            
-            // Action when "Cancel" is clicked
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            alertController.addAction(renameAction)
-            alertController.addAction(cancelAction)
-            
-            present(alertController, animated: true, completion: nil)
-        }
-        dismiss(animated: true, completion: nil)
-    }
-    
     func listFileInDocumentsDirectory() -> [DocumentFile] {
         // Obtenir le chemin du répertoire Documents
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -189,6 +197,9 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         allDocuments[0] = bundleDocuments
         allDocuments[1] = documentDirectoryFiles
 
+        // Update filtered documents based on search results
+        updateSearchResults(for: searchController)
+        
         // Recharger la TableView
         tableView.reloadData()
     }
@@ -224,13 +235,13 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return allDocuments[section].count
+        return filteredDocuments[section].count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
         
-        let document = allDocuments[indexPath.section][indexPath.row]
+        let document = filteredDocuments[indexPath.section][indexPath.row]
         
         cell.textLabel?.text = document.title
         cell.detailTextLabel?.text = "Size: \(document.size.formattedSize())"
@@ -244,7 +255,7 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let document = allDocuments[indexPath.section][indexPath.row]
+        let document = filteredDocuments[indexPath.section][indexPath.row]
         instantiateQLPreviewController(withUrl: document.url)
     }
     
