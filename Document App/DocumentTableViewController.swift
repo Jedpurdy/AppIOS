@@ -74,15 +74,12 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
 
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2 // Deux sections : Importés et Bundle
+        return 1 // Une seule section
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return DocumentFile.documents.count // Fichiers dans le bundle
-        } else {
-            return userImportedFiles.count // Fichiers importés
-        }
+        // Nombre total de documents : bundle + fichiers importés
+        return DocumentFile.documents.count + userImportedFiles.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -91,12 +88,12 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         
         // Identifier le fichier correspondant
         let document: DocumentFile
-        if indexPath.section == 0 {
+        if indexPath.row < DocumentFile.documents.count {
             // Fichiers dans le bundle
             document = DocumentFile.documents[indexPath.row]
         } else {
             // Fichiers importés
-            document = userImportedFiles[indexPath.row]
+            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
         }
         
         // Configuration de la cellule
@@ -110,12 +107,12 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Identifier le fichier correspondant
         let document: DocumentFile
-        if indexPath.section == 0 {
+        if indexPath.row < DocumentFile.documents.count {
             // Fichiers dans le bundle
             document = DocumentFile.documents[indexPath.row]
         } else {
             // Fichiers importés
-            document = userImportedFiles[indexPath.row]
+            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
         }
         
         // Ouvrir le fichier dans QLPreviewController
