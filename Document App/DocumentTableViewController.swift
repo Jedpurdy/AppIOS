@@ -305,8 +305,77 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         let previewController = QLPreviewController()
         previewController.dataSource = self  // Assigner le datasource à self
         previewItem = url as QLPreviewItem
+        
+        // Add a toolbar with actions for renaming or deleting
+        let renameAction = UIBarButtonItem(title: "Rename", style: .plain, target: self, action: #selector(renameFile))
+        let deleteAction = UIBarButtonItem(title: "Delete", style: .plain, target: self, action: #selector(deleteFile))
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        previewController.toolbarItems = [flexibleSpace, renameAction, flexibleSpace, deleteAction, flexibleSpace]
+        previewController.navigationController?.isToolbarHidden = false // Ensure toolbar is visible
+        
         navigationController?.pushViewController(previewController, animated: true)
     }
+
+    @objc func renameFile() {
+        guard let fileUrl = previewItem as? URL else { return }
+        
+        let alertController = UIAlertController(
+            title: "Rename File",
+            message: "Enter a new name for the file.",
+            preferredStyle: .alert
+        )
+        alertController.addTextField { textField in
+            textField.placeholder = fileUrl.lastPathComponent
+        }
+        let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
+            guard let newName = alertController.textFields?.first?.text, !newName.isEmpty else { return }
+            
+            let fileManager = FileManager.default
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let newFileUrl = documentsDirectory.appendingPathComponent(newName).appendingPathExtension(fileUrl.pathExtension)
+            
+            do {
+                try fileManager.moveItem(at: fileUrl, to: newFileUrl)
+                self.loadAllDocuments() // Refresh the document list
+            } catch {
+                print("Error renaming file: \(error.localizedDescription)")
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(renameAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+    @objc func deleteFile() {
+        guard let fileUrl = previewItem as? URL else { return }
+        
+        let alertController = UIAlertController(
+            title: "Delete File",
+            message: "Are you sure you want to delete this file?",
+            preferredStyle: .alert
+        )
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
+            let fileManager = FileManager.default
+            do {
+                try fileManager.removeItem(at: fileUrl)
+                self.loadAllDocuments() // Refresh the document list
+                self.navigationController?.popViewController(animated: true) // Exit QLPreviewController
+            } catch {
+                print("Error deleting file: \(error.localizedDescription)")
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(deleteAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
     
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
         return 1 // Nous ne présentons qu'un seul fichier à la fois
