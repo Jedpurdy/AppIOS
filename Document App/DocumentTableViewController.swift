@@ -14,7 +14,7 @@ func listFileInBundle() -> [DocumentFile] {
     var documentListBundle = [DocumentFile]()
     
     // Define an array of valid file extensions you want to include
-    let validExtensions = ["jpg", "jpeg", "png", "pdf"]
+    let validExtensions = ["jpg", "jpeg", "png", "pdf", "gif","mp4"]
     
     for item in items {
         // Ignorer les fichiers système "DS_Store" et récupérer tous les fichiers
@@ -68,11 +68,22 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     var allDocuments: [[DocumentFile]] = [[], []]
     var filteredDocuments: [[DocumentFile]] = [[], []]
     var searchController: UISearchController!
+    var isDarkMode: Bool = false
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+                    title: "Dark Mode",
+                    style: .plain,
+                    target: self,
+                    action: #selector(toggleTheme)
+                )
         // Initialize the search controller
+        
+
+        
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -86,6 +97,15 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         ]
         
         loadAllDocuments()
+    }
+    @objc func toggleTheme() {
+        isDarkMode.toggle()
+        
+        // Apply the theme
+        overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+        
+        // Update the button title to reflect the current mode
+        navigationItem.leftBarButtonItem?.title = isDarkMode ? "Light Mode" : "Dark Mode"
     }
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -134,8 +154,11 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         
         // If the user has provided a new name, use it and append ".jpg" for images
         if let newName = newName, !newName.isEmpty {
-            // Ensure the file ends with .jpg
-            destinationUrl = documentsDirectory.appendingPathComponent(newName + ".jpg")
+            // Extract the file extension from the source URL
+            let fileExtension = url.pathExtension // Get the original file's extension
+            
+            // Create the destination URL with the new name and the original extension
+            destinationUrl = documentsDirectory.appendingPathComponent(newName).appendingPathExtension(fileExtension)
         }
         
         do {

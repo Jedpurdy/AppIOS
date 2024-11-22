@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		DB240E3E2CF06E970021CFA4 /* DocumentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452352CEB4628007C64A7 /* DocumentTableViewController.swift */; };
+		DB240E402CF0AE580021CFA4 /* TokyoDrift.gif in Resources */ = {isa = PBXBuildFile; fileRef = DB240E3F2CF0AE580021CFA4 /* TokyoDrift.gif */; };
+		DB240E422CF0AE5D0021CFA4 /* LightLambo.gif in Resources */ = {isa = PBXBuildFile; fileRef = DB240E412CF0AE5C0021CFA4 /* LightLambo.gif */; };
+		DB240E442CF0AE670021CFA4 /* porsche_drift.gif in Resources */ = {isa = PBXBuildFile; fileRef = DB240E432CF0AE670021CFA4 /* porsche_drift.gif */; };
+		DB240E462CF0AE6B0021CFA4 /* mclaren.gif in Resources */ = {isa = PBXBuildFile; fileRef = DB240E452CF0AE6B0021CFA4 /* mclaren.gif */; };
 		DBF4521F2CEB317F007C64A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF4521E2CEB317F007C64A7 /* AppDelegate.swift */; };
 		DBF452212CEB317F007C64A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452202CEB317F007C64A7 /* SceneDelegate.swift */; };
 		DBF452232CEB317F007C64A7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452222CEB317F007C64A7 /* ViewController.swift */; };
@@ -38,6 +42,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DB240E3F2CF0AE580021CFA4 /* TokyoDrift.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = TokyoDrift.gif; sourceTree = "<group>"; };
+		DB240E412CF0AE5C0021CFA4 /* LightLambo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = LightLambo.gif; sourceTree = "<group>"; };
+		DB240E432CF0AE670021CFA4 /* porsche_drift.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = porsche_drift.gif; sourceTree = "<group>"; };
+		DB240E452CF0AE6B0021CFA4 /* mclaren.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = mclaren.gif; sourceTree = "<group>"; };
 		DBF4521B2CEB317F007C64A7 /* Car Pictures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Car Pictures.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBF4521E2CEB317F007C64A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBF452202CEB317F007C64A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +139,10 @@
 				DBF452472CEB8BB8007C64A7 /* M5Comp.jpg */,
 				DBF452542CEB8BD7007C64A7 /* SUPRAAA.jpg */,
 				DBF452552CEB8BD9007C64A7 /* Taxi.jpg */,
+				DB240E412CF0AE5C0021CFA4 /* LightLambo.gif */,
+				DB240E3F2CF0AE580021CFA4 /* TokyoDrift.gif */,
+				DB240E432CF0AE670021CFA4 /* porsche_drift.gif */,
+				DB240E452CF0AE6B0021CFA4 /* mclaren.gif */,
 			);
 			path = "Document App";
 			sourceTree = "<group>";
@@ -200,11 +212,14 @@
 				DBF452692CEB8BDE007C64A7 /* Taxi.jpg in Resources */,
 				DBF452282CEB3181007C64A7 /* Assets.xcassets in Resources */,
 				DBF452262CEB317F007C64A7 /* Main.storyboard in Resources */,
+				DB240E422CF0AE5D0021CFA4 /* LightLambo.gif in Resources */,
 				DBF452602CEB8BDE007C64A7 /* FerrariEngine.jpg in Resources */,
 				DBF452682CEB8BDE007C64A7 /* SUPRAAA.jpg in Resources */,
+				DB240E462CF0AE6B0021CFA4 /* mclaren.gif in Resources */,
 				DBF452672CEB8BDE007C64A7 /* CustomGTR.jpg in Resources */,
 				DBF4525E2CEB8BDE007C64A7 /* LamborginiSTO.jpg in Resources */,
 				DBF4525F2CEB8BDE007C64A7 /* LamborginiHurican.jpg in Resources */,
+				DB240E442CF0AE670021CFA4 /* porsche_drift.gif in Resources */,
 				DBF4526B2CEB8BDE007C64A7 /* ShelbyCobra.jpg in Resources */,
 				DBF4525C2CEB8BDE007C64A7 /* Chevy.jpg in Resources */,
 				DBF452632CEB8BDE007C64A7 /* Mitsubishi.jpg in Resources */,
@@ -216,6 +231,7 @@
 				DBF4525D2CEB8BDE007C64A7 /* GT2RS.jpg in Resources */,
 				DBF452662CEB8BDE007C64A7 /* GTR_Skyline.jpg in Resources */,
 				DBF4525B2CEB8BDE007C64A7 /* M5Comp.jpg in Resources */,
+				DB240E402CF0AE580021CFA4 /* TokyoDrift.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
