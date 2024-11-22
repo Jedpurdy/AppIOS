@@ -15,7 +15,7 @@ func listFileInBundle() -> [DocumentFile] {
     
     for item in items {
         // Ignorer les fichiers système "DS_Store" et récupérer tous les fichiers
-        if !item.hasSuffix("DS_Store") {
+        if !item.hasSuffix("DS_Store") && item.hasSuffix(".jpg") {
             let currentUrl = URL(fileURLWithPath: path + "/" + item)
             // Récupérer les informations sur le fichier
             let resourcesValues = try! currentUrl.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
@@ -54,14 +54,17 @@ extension Int {
     }
 }
 
-class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource, UIDocumentPickerDelegate {
+class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource, UIDocumentPickerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var previewItem: QLPreviewItem?
     var allDocuments: [[DocumentFile]] = [[], []]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument)),
+            UIBarButtonItem(title: "Photos", style: .plain, target: self, action: #selector(pickImageFromPhotos))
+        ]
         loadAllDocuments()
     }
     
@@ -73,35 +76,78 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         present(documentPicker, animated: true, completion: nil)
     }
     
-    func copyFileToDocumentsDirectory(fromUrl url: URL) {
-           let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-           let destinationUrl = documentsDirectory.appendingPathComponent(url.lastPathComponent)
-           
-           do {
-               try FileManager.default.copyItem(at: url, to: destinationUrl)
-                       
-               let resourceValues = try? url.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
-                       
-                       
-                   if let resources = resourceValues,
-                      let name = resources.name, // Nom du fichier
-                      let contentType = resources.contentType {
-                       
-                       let documentFile = DocumentFile(
-                           title: name,
-                           size: Int(resources.fileSize ?? 0),
-                           imageName: nil,
-                           url: destinationUrl,
-                           type: contentType.description
-                       )
-                       allDocuments[1].append(documentFile)
-                   } else {
-                       print("Erreur: Les propriétés du fichier ne sont pas accessibles.")
-                   }
-           } catch {
-               print(error)
-           }
-       }
+    @objc func pickImageFromPhotos() {
+        // Utilisation d'un UIImagePickerController pour choisir une image depuis la bibliothèque de photos
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        imagePickerController.sourceType = .photoLibrary
+        imagePickerController.allowsEditing = false
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func copyFileToDocumentsDirectory(fromUrl url: URL, newName: String?) {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        var destinationUrl = documentsDirectory.appendingPathComponent(url.lastPathComponent)
+        
+        // If the user has provided a new name, use it and append ".jpg" for images
+        if let newName = newName, !newName.isEmpty {
+            // Ensure the file ends with .jpg
+            destinationUrl = documentsDirectory.appendingPathComponent(newName + ".jpg")
+        }
+        
+        do {
+            // Copy file from the selected URL to the Documents directory
+            try FileManager.default.copyItem(at: url, to: destinationUrl)
+            
+            let resourceValues = try? url.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
+                    
+            if let resources = resourceValues,
+               let name = resources.name, // Nom du fichier
+               let contentType = resources.contentType {
+                // Créer un DocumentFile et l'ajouter à la liste des fichiers importés
+                let documentFile = DocumentFile(
+                    title: newName ?? name, // Use the new name if provided
+                    size: Int(resources.fileSize ?? 0),
+                    imageName: nil,
+                    url: destinationUrl,
+                    type: contentType.description
+                )
+                allDocuments[1].append(documentFile) // Ajouter le fichier importé à la liste des documents importés
+            } else {
+                print("Erreur: Les propriétés du fichier ne sont pas accessibles.")
+            }
+        } catch {
+            print("Error copying file: \(error)")
+        }
+    }
+    
+    // Handle the image selected from the photos library
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        // Check if an image was picked
+        if let selectedImage = info[.imageURL] as? URL {
+            // Present an alert to allow the user to rename the image
+            let alertController = UIAlertController(title: "Rename Image", message: "Enter a new name for the image.", preferredStyle: .alert)
+            alertController.addTextField { textField in
+                textField.placeholder = selectedImage.lastPathComponent
+            }
+            
+            // Action when "Rename" is clicked
+            let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
+                if let newName = alertController.textFields?.first?.text {
+                    self.copyFileToDocumentsDirectory(fromUrl: selectedImage, newName: newName)
+                    self.loadAllDocuments()  // Reload the table to show the new image in the imported documents section
+                }
+            }
+            
+            // Action when "Cancel" is clicked
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(renameAction)
+            alertController.addAction(cancelAction)
+            
+            present(alertController, animated: true, completion: nil)
+        }
+        dismiss(animated: true, completion: nil)
+    }
     
     func listFileInDocumentsDirectory() -> [DocumentFile] {
         // Obtenir le chemin du répertoire Documents
@@ -149,15 +195,30 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedFileUrl = urls.first else { return }
-        copyFileToDocumentsDirectory(fromUrl: selectedFileUrl)
 
-        // Mettre à jour la DataSource et recharger la TableView
-        loadAllDocuments()
+        // Present an alert to allow the user to rename the file
+        let alertController = UIAlertController(title: "Rename File", message: "Enter a new name for the file.", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = selectedFileUrl.lastPathComponent
+        }
+        
+        // Action when "Rename" is clicked
+        let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
+            if let newName = alertController.textFields?.first?.text {
+                self.copyFileToDocumentsDirectory(fromUrl: selectedFileUrl, newName: newName)
+                self.loadAllDocuments()  // Reload the table to show the new document in the imported documents section
+            }
+        }
+        
+        // Action when "Cancel" is clicked
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(renameAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
     
-    
-    // MARK: - Table view data source
-    
+    // Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
@@ -167,29 +228,25 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
-                
-                let document = allDocuments[indexPath.section][indexPath.row]
-                
-                cell.textLabel?.text = document.title
-                
-                cell.detailTextLabel?.text = "Size: \(document.size.formattedSize())"
+        let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
         
-                let arrowIcon = UIImage(systemName: "chevron.right")
-                cell.accessoryView = UIImageView(image: arrowIcon)
+        let document = allDocuments[indexPath.section][indexPath.row]
         
-                cell.imageView?.image = UIImage(systemName: "doc.text")
-                
-                
-                return cell
+        cell.textLabel?.text = document.title
+        cell.detailTextLabel?.text = "Size: \(document.size.formattedSize())"
+        
+        let arrowIcon = UIImage(systemName: "chevron.right")
+        cell.accessoryView = UIImageView(image: arrowIcon)
+        
+        cell.imageView?.image = UIImage(systemName: "doc.text")
+        
+        return cell
     }
     
-    // Dans DocumentTableViewController
-
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let document = allDocuments[indexPath.section][indexPath.row]
-           instantiateQLPreviewController(withUrl: document.url)
-       }
+        instantiateQLPreviewController(withUrl: document.url)
+    }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
@@ -202,24 +259,19 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         }
     }
 
-
-       // 2. Cette méthode permet de présenter le QLPreviewController
+    // Présenter le QLPreviewController
     func instantiateQLPreviewController(withUrl url: URL) {
-       let previewController = QLPreviewController()
-       previewController.dataSource = self  // Assigner le datasource à self
+        let previewController = QLPreviewController()
+        previewController.dataSource = self  // Assigner le datasource à self
         previewItem = url as QLPreviewItem
-       navigationController?.pushViewController(previewController, animated: true)
-   }
+        navigationController?.pushViewController(previewController, animated: true)
+    }
     
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-            return 1 // Nous ne présentons qu'un seul fichier à la fois
-        }
+        return 1 // Nous ne présentons qu'un seul fichier à la fois
+    }
 
-        // Cette méthode retourne l'élément à asfficher
-        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-            // Retourner l'item QuickLook, qui est simplement l'URL du fichier
-            return previewItem!
-        }
-
-   
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return previewItem!
+    }
 }
