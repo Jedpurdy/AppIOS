@@ -38,7 +38,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DBF4521B2CEB317F007C64A7 /* Document App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Document App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBF4521B2CEB317F007C64A7 /* Car Pictures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Car Pictures.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBF4521E2CEB317F007C64A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBF452202CEB317F007C64A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		DBF452222CEB317F007C64A7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -93,7 +93,7 @@
 		DBF4521C2CEB317F007C64A7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DBF4521B2CEB317F007C64A7 /* Document App.app */,
+				DBF4521B2CEB317F007C64A7 /* Car Pictures.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,9 +138,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DBF4521A2CEB317F007C64A7 /* Document App */ = {
+		DBF4521A2CEB317F007C64A7 /* Car Pictures */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DBF4522F2CEB3181007C64A7 /* Build configuration list for PBXNativeTarget "Document App" */;
+			buildConfigurationList = DBF4522F2CEB3181007C64A7 /* Build configuration list for PBXNativeTarget "Car Pictures" */;
 			buildPhases = (
 				DBF452172CEB317F007C64A7 /* Sources */,
 				DBF452182CEB317F007C64A7 /* Frameworks */,
@@ -150,9 +150,9 @@
 			);
 			dependencies = (
 			);
-			name = "Document App";
+			name = "Car Pictures";
 			productName = "Document App";
-			productReference = DBF4521B2CEB317F007C64A7 /* Document App.app */;
+			productReference = DBF4521B2CEB317F007C64A7 /* Car Pictures.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -170,7 +170,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DBF452162CEB317F007C64A7 /* Build configuration list for PBXProject "Document App" */;
+			buildConfigurationList = DBF452162CEB317F007C64A7 /* Build configuration list for PBXProject "Car Pictures" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -183,7 +183,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DBF4521A2CEB317F007C64A7 /* Document App */,
+				DBF4521A2CEB317F007C64A7 /* Car Pictures */,
 			);
 		};
 /* End PBXProject section */
@@ -432,7 +432,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DBF452162CEB317F007C64A7 /* Build configuration list for PBXProject "Document App" */ = {
+		DBF452162CEB317F007C64A7 /* Build configuration list for PBXProject "Car Pictures" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DBF4522D2CEB3181007C64A7 /* Debug */,
@@ -441,7 +441,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DBF4522F2CEB3181007C64A7 /* Build configuration list for PBXNativeTarget "Document App" */ = {
+		DBF4522F2CEB3181007C64A7 /* Build configuration list for PBXNativeTarget "Car Pictures" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DBF452302CEB3181007C64A7 /* Debug */,

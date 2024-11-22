@@ -91,18 +91,25 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     func updateSearchResults(for searchController: UISearchController) {
         let searchText = searchController.searchBar.text ?? ""
         
-        // Filter documents based on the search text
-        filteredDocuments[0] = allDocuments[0].filter { document in
-            document.title.lowercased().contains(searchText.lowercased())
+        if searchText.isEmpty {
+            // If search text is empty, don't filter, use the original document lists
+            filteredDocuments[0] = allDocuments[0]
+            filteredDocuments[1] = allDocuments[1]
+        } else {
+            // Filter documents based on the search text
+            filteredDocuments[0] = allDocuments[0].filter { document in
+                document.title.lowercased().contains(searchText.lowercased())
+            }
+            
+            filteredDocuments[1] = allDocuments[1].filter { document in
+                document.title.lowercased().contains(searchText.lowercased())
+            }
         }
         
-        filteredDocuments[1] = allDocuments[1].filter { document in
-            document.title.lowercased().contains(searchText.lowercased())
-        }
-        
-        // Reload the table view with filtered results
+        // Reload the table view with filtered or unfiltered results
         tableView.reloadData()
     }
+
     
     @objc func addDocument() {
         // Lancer le UIDocumentPicker
