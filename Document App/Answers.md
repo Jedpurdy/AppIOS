@@ -134,3 +134,22 @@
         }
     }
     
+
+9) QLPreview
+    
+Changer pour un disclosureIndicator rend l'interface plus claire et intuitive, car c’est le standard pour indiquer qu'on peut naviguer vers une nouvelle vue. C’est simple à mettre en place et ça fait gagner du temps.
+
+
+10)Importation
+    
+
+    - Un #selector en Swift permet de lier une méthode à un événement, comme un clic de bouton.
+    - .add fait référence à l’ajout de cette action à un élément, comme un bouton.
+    - Xcode demande @objc car les sélecteurs viennent d'Objective-C, et @objc rend la méthode compatible avec ce système.
+    - Oui, on peut ajouter plusieurs boutons dans la barre de navigation en les assignant à leftBarButtonItem et rightBarButtonItem.
+    
+    
+    La fonction defer en Swift permet de spécifier un bloc de code qui sera exécuté juste avant que le contrôle ne sorte de la portée actuelle, peu importe comment on en sort. on l'utilise aussi en html pour éxécuter un script a la fin du chargment de notre page pour ne pas qu'on manipule des tags qui n'éxiste pas.
+    
+11)Sections 
+

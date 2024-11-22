@@ -66,17 +66,23 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         super.viewDidLoad()
 
         // Ajouter un bouton pour importer des fichiers
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument)),
+            UIBarButtonItem(title: "Photos", style: .plain, target: self, action: #selector(pickImageFromPhotos))
+        ]
     }
 
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1 // Une seule section
+        return 2 // Deux sections : Importés et Bundle
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Nombre total de documents : bundle + fichiers importés
-        return DocumentFile.documents.count + userImportedFiles.count
+        if section == 0 {
+            return DocumentFile.documents.count // Fichiers dans le bundle
+        } else {
+            return userImportedFiles.count // Fichiers importés
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -85,12 +91,12 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         
         // Identifier le fichier correspondant
         let document: DocumentFile
-        if indexPath.row < DocumentFile.documents.count {
+        if indexPath.section == 0 {
             // Fichiers dans le bundle
             document = DocumentFile.documents[indexPath.row]
         } else {
             // Fichiers importés
-            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
+            document = userImportedFiles[indexPath.row]
         }
         
         // Configuration de la cellule
@@ -104,12 +110,12 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Identifier le fichier correspondant
         let document: DocumentFile
-        if indexPath.row < DocumentFile.documents.count {
+        if indexPath.section == 0 {
             // Fichiers dans le bundle
             document = DocumentFile.documents[indexPath.row]
         } else {
             // Fichiers importés
-            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
+            document = userImportedFiles[indexPath.row]
         }
         
         // Ouvrir le fichier dans QLPreviewController
@@ -171,6 +177,14 @@ class DocumentTableViewController: UITableViewController, QLPreviewControllerDat
         // Recharger la table
         tableView.reloadData()
     }
+
+    // MARK: - Choisir une image depuis la galerie photos
+    @objc func pickImageFromPhotos() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true)
+    }
 }
 
 // Extension pour UIDocumentPickerDelegate
@@ -183,5 +197,22 @@ extension DocumentTableViewController: UIDocumentPickerDelegate {
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         print("Le sélectionneur de document a été annulé.")
+    }
+}
+
+// Extension pour UIImagePickerControllerDelegate
+extension DocumentTableViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let imageUrl = info[.imageURL] as? URL {
+            copyFileToDocumentsDirectory(fromUrl: imageUrl)
+            userImportedFiles.append(DocumentFile(
+                title: imageUrl.lastPathComponent,
+                size: (try? imageUrl.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0) ?? 0,
+                url: imageUrl,
+                type: imageUrl.pathExtension
+            ))
+        }
+        dismiss(animated: true)
+        tableView.reloadData()
     }
 }
