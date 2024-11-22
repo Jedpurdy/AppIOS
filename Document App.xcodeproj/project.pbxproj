@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DB240E3E2CF06E970021CFA4 /* DocumentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452352CEB4628007C64A7 /* DocumentTableViewController.swift */; };
 		DBF4521F2CEB317F007C64A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF4521E2CEB317F007C64A7 /* AppDelegate.swift */; };
 		DBF452212CEB317F007C64A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452202CEB317F007C64A7 /* SceneDelegate.swift */; };
 		DBF452232CEB317F007C64A7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452222CEB317F007C64A7 /* ViewController.swift */; };
 		DBF452262CEB317F007C64A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBF452242CEB317F007C64A7 /* Main.storyboard */; };
 		DBF452282CEB3181007C64A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DBF452272CEB3181007C64A7 /* Assets.xcassets */; };
 		DBF4522B2CEB3181007C64A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBF452292CEB3181007C64A7 /* LaunchScreen.storyboard */; };
-		DBF452362CEB4628007C64A7 /* DocumentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452352CEB4628007C64A7 /* DocumentTableViewController.swift */; };
 		DBF452442CEB7CB9007C64A7 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF452432CEB7CB9007C64A7 /* DocumentViewController.swift */; };
 		DBF452592CEB8BDE007C64A7 /* Audi.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DBF452452CEB8BB6007C64A7 /* Audi.jpg */; };
 		DBF4525A2CEB8BDE007C64A7 /* GTR.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DBF452462CEB8BB7007C64A7 /* GTR.jpg */; };
@@ -47,7 +47,7 @@
 		DBF4522A2CEB3181007C64A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DBF4522C2CEB3181007C64A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBF452322CEB333A007C64A7 /* Answers.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Answers.md; sourceTree = "<group>"; };
-		DBF452352CEB4628007C64A7 /* DocumentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTableViewController.swift; sourceTree = "<group>"; };
+		DBF452352CEB4628007C64A7 /* DocumentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTableViewController.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		DBF452432CEB7CB9007C64A7 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
 		DBF452452CEB8BB6007C64A7 /* Audi.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Audi.jpg; sourceTree = "<group>"; };
 		DBF452462CEB8BB7007C64A7 /* GTR.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GTR.jpg; sourceTree = "<group>"; };
@@ -226,10 +226,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB240E3E2CF06E970021CFA4 /* DocumentTableViewController.swift in Sources */,
 				DBF452442CEB7CB9007C64A7 /* DocumentViewController.swift in Sources */,
 				DBF452232CEB317F007C64A7 /* ViewController.swift in Sources */,
 				DBF4521F2CEB317F007C64A7 /* AppDelegate.swift in Sources */,
-				DBF452362CEB4628007C64A7 /* DocumentTableViewController.swift in Sources */,
 				DBF452212CEB317F007C64A7 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
