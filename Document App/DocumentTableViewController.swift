@@ -54,162 +54,172 @@ extension Int {
     }
 }
 
-// Classe pour gérer la liste des documents
-class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource {
-
-    // Propriété pour le fichier actuellement prévisualisé
+class DocumentTableViewController: UITableViewController, QLPreviewControllerDataSource, UIDocumentPickerDelegate {
+    
     var previewItem: QLPreviewItem?
-    // Tableau des fichiers importés par l'utilisateur
-    var userImportedFiles: [DocumentFile] = []
+    var allDocuments: [[DocumentFile]] = [[], []]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Ajouter un bouton pour importer des fichiers
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument)),
-            UIBarButtonItem(title: "Photos", style: .plain, target: self, action: #selector(pickImageFromPhotos))
-        ]
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addDocument))
+        loadAllDocuments()
     }
+    
+    @objc func addDocument() {
+        // Lancer le UIDocumentPicker
+        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item]) // Permet de sélectionner tous types de fichiers
+        documentPicker.delegate = self
+        documentPicker.allowsMultipleSelection = false // Pas de sélection multiple
+        present(documentPicker, animated: true, completion: nil)
+    }
+    
+    func copyFileToDocumentsDirectory(fromUrl url: URL) {
+           let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+           let destinationUrl = documentsDirectory.appendingPathComponent(url.lastPathComponent)
+           
+           do {
+               try FileManager.default.copyItem(at: url, to: destinationUrl)
+                       
+               let resourceValues = try? url.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
+                       
+                       
+                   if let resources = resourceValues,
+                      let name = resources.name, // Nom du fichier
+                      let contentType = resources.contentType {
+                       
+                       let documentFile = DocumentFile(
+                           title: name,
+                           size: Int(resources.fileSize ?? 0),
+                           imageName: nil,
+                           url: destinationUrl,
+                           type: contentType.description
+                       )
+                       allDocuments[1].append(documentFile)
+                   } else {
+                       print("Erreur: Les propriétés du fichier ne sont pas accessibles.")
+                   }
+           } catch {
+               print(error)
+           }
+       }
+    
+    func listFileInDocumentsDirectory() -> [DocumentFile] {
+        // Obtenir le chemin du répertoire Documents
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileManager = FileManager.default
+        var documentList = [DocumentFile]()
 
+        do {
+            // Obtenir tous les fichiers du répertoire
+            let fileUrls = try fileManager.contentsOfDirectory(at: documentsDirectory, includingPropertiesForKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
+            
+            for fileUrl in fileUrls {
+                // Récupérer les propriétés des fichiers
+                let resourceValues = try fileUrl.resourceValues(forKeys: [.contentTypeKey, .nameKey, .fileSizeKey])
+                
+                documentList.append(DocumentFile(
+                    title: resourceValues.name ?? "Fichier inconnu",
+                    size: resourceValues.fileSize ?? 0,
+                    imageName: nil, // Pas d'image par défaut
+                    url: fileUrl,
+                    type: resourceValues.contentType?.description ?? "Type inconnu"
+                ))
+            }
+        } catch {
+            print("Erreur lors de la lecture des fichiers dans Documents : \(error.localizedDescription)")
+        }
+
+        return documentList
+    }
+    
+    func loadAllDocuments() {
+        // Charger les fichiers du bundle
+        let bundleDocuments = listFileInBundle()
+
+        // Charger les fichiers du répertoire Documents
+        let documentDirectoryFiles = listFileInDocumentsDirectory()
+
+        // Remplir les sous-listes dans allDocuments : [Bundle, Importés]
+        allDocuments[0] = bundleDocuments
+        allDocuments[1] = documentDirectoryFiles
+
+        // Recharger la TableView
+        tableView.reloadData()
+    }
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let selectedFileUrl = urls.first else { return }
+        copyFileToDocumentsDirectory(fromUrl: selectedFileUrl)
+
+        // Mettre à jour la DataSource et recharger la TableView
+        loadAllDocuments()
+    }
+    
+    
     // MARK: - Table view data source
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1 // Une seule section
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Nombre total de documents : bundle + fichiers importés
-        return DocumentFile.documents.count + userImportedFiles.count
+        return allDocuments[section].count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Obtenir une cellule réutilisable
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
+                let cell = tableView.dequeueReusableCell(withIdentifier: "DocumentCell", for: indexPath)
+                
+                let document = allDocuments[indexPath.section][indexPath.row]
+                
+                cell.textLabel?.text = document.title
+                
+                cell.detailTextLabel?.text = "Size: \(document.size.formattedSize())"
         
-        // Identifier le fichier correspondant
-        let document: DocumentFile
-        if indexPath.row < DocumentFile.documents.count {
-            // Fichiers dans le bundle
-            document = DocumentFile.documents[indexPath.row]
-        } else {
-            // Fichiers importés
-            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
-        }
+                let arrowIcon = UIImage(systemName: "chevron.right")
+                cell.accessoryView = UIImageView(image: arrowIcon)
         
-        // Configuration de la cellule
-        cell.textLabel?.text = document.title                         // Titre
-        cell.detailTextLabel?.text = document.size.formattedSize()    // Taille formatée
-        cell.imageView?.image = UIImage(systemName: "doc.fill")       // Icône
-        
-        return cell
+                cell.imageView?.image = UIImage(systemName: "doc.text")
+                
+                
+                return cell
     }
     
+    // Dans DocumentTableViewController
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Identifier le fichier correspondant
-        let document: DocumentFile
-        if indexPath.row < DocumentFile.documents.count {
-            // Fichiers dans le bundle
-            document = DocumentFile.documents[indexPath.row]
-        } else {
-            // Fichiers importés
-            document = userImportedFiles[indexPath.row - DocumentFile.documents.count]
-        }
-        
-        // Ouvrir le fichier dans QLPreviewController
-        instantiateQLPreviewController(withUrl: document.url)
-    }
+        let document = allDocuments[indexPath.section][indexPath.row]
+           instantiateQLPreviewController(withUrl: document.url)
+       }
     
-    // MARK: - Méthodes pour QLPreviewController
-    func instantiateQLPreviewController(withUrl url: URL) {
-        let previewController = QLPreviewController()
-        previewController.dataSource = self
-        previewItem = url as QLPreviewItem
-        navigationController?.pushViewController(previewController, animated: true)
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Bundle"  // Titre de la section des fichiers du bundle
+        case 1:
+            return "Importés"  // Titre de la section des fichiers importés
+        default:
+            return nil
+        }
     }
+
+
+       // 2. Cette méthode permet de présenter le QLPreviewController
+    func instantiateQLPreviewController(withUrl url: URL) {
+       let previewController = QLPreviewController()
+       previewController.dataSource = self  // Assigner le datasource à self
+        previewItem = url as QLPreviewItem
+       navigationController?.pushViewController(previewController, animated: true)
+   }
     
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-        return 1 // Toujours un seul fichier à prévisualiser
-    }
-    
-    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-        return previewItem!
-    }
-    
-    // MARK: - Ajouter un document avec UIDocumentPicker
-    @objc func addDocument() {
-        // Créer un UIDocumentPicker pour choisir un fichier
-        let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
-        documentPicker.delegate = self
-        present(documentPicker, animated: true)
-    }
-    
-    // Fonction pour copier un fichier dans le répertoire Documents de l'application
-    func copyFileToDocumentsDirectory(fromUrl url: URL) {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let destinationUrl = documentsDirectory.appendingPathComponent(url.lastPathComponent)
-        
-        do {
-            // Copier le fichier à l'URL de destination
-            try FileManager.default.copyItem(at: url, to: destinationUrl)
-            print("Fichier copié : \(destinationUrl)")
-        } catch {
-            print("Erreur lors de la copie : \(error)")
+            return 1 // Nous ne présentons qu'un seul fichier à la fois
         }
-    }
-    
-    // Rafraîchir la liste des documents
-    func refreshDocumentList() {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let fileURLs = try! FileManager.default.contentsOfDirectory(at: documentsDirectory, includingPropertiesForKeys: nil)
-        
-        // Ajouter chaque fichier importé à la liste
-        userImportedFiles = fileURLs.map { url in
-            let fileName = url.lastPathComponent
-            let fileSize = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-            let fileType = (try? url.resourceValues(forKeys: [.contentTypeKey]).contentType?.description) ?? "Inconnu"
-            
-            return DocumentFile(title: fileName, size: fileSize, url: url, type: fileType)
+
+        // Cette méthode retourne l'élément à asfficher
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            // Retourner l'item QuickLook, qui est simplement l'URL du fichier
+            return previewItem!
         }
-        
-        // Recharger la table
-        tableView.reloadData()
-    }
 
-    // MARK: - Choisir une image depuis la galerie photos
-    @objc func pickImageFromPhotos() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
-        present(imagePicker, animated: true)
-    }
-}
-
-// Extension pour UIDocumentPickerDelegate
-extension DocumentTableViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let selectedFileUrl = urls.first else { return }
-        copyFileToDocumentsDirectory(fromUrl: selectedFileUrl) // Copier le fichier
-        refreshDocumentList() // Rafraîchir la liste des fichiers
-    }
-
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        print("Le sélectionneur de document a été annulé.")
-    }
-}
-
-// Extension pour UIImagePickerControllerDelegate
-extension DocumentTableViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let imageUrl = info[.imageURL] as? URL {
-            copyFileToDocumentsDirectory(fromUrl: imageUrl)
-            userImportedFiles.append(DocumentFile(
-                title: imageUrl.lastPathComponent,
-                size: (try? imageUrl.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0) ?? 0,
-                url: imageUrl,
-                type: imageUrl.pathExtension
-            ))
-        }
-        dismiss(animated: true)
-        tableView.reloadData()
-    }
+   
 }
